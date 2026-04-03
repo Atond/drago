@@ -1,0 +1,131 @@
+// Prisma schema for DragoDofus - Mount Tracker (Muldos, Dragodindes, Volkornes)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// === Enum for mount types ===
+
+enum MountType {
+  MULDO
+  DRAGODINDE
+  VOLKORNE
+}
+
+// === NextAuth v5 models ===
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String    // bcrypt hash
+  name          String?
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  userMounts    UserMount[]
+  breedingPlans BreedingPlan[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// === Mount models (Muldos, Dragodindes, Volkornes) ===
+
+model Mount {
+  id         Int       @id @default(autoincrement())
+  name       String
+  type       MountType
+  generation Int       // 1-10+
+  bonus      String?   // Description du bonus/stats
+  imageUrl   String?
+
+  // Parents pour le croisement (null pour Gen 1)
+  parent1Id Int?
+  parent2Id Int?
+  parent1   Mount? @relation("Parent1", fields: [parent1Id], references: [id])
+  parent2   Mount? @relation("Parent2", fields: [parent2Id], references: [id])
+
+  // Relations inverses
+  childrenAsP1 Mount[] @relation("Parent1")
+  childrenAsP2 Mount[] @relation("Parent2")
+
+  userMounts    UserMount[]
+  breedingPlans BreedingPlan[]
+
+  @@unique([name, type])
+}
+
+model UserMount {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  mountId     Int
+  maleCount   Int      @default(0)
+  femaleCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mount Mount @relation(fields: [mountId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mountId])
+}
+
+model BreedingPlan {
+  id              Int      @id @default(autoincrement())
+  userId          String
+  mountId         Int
+  parentLevel     Int      @default(1)
+  xpTier          Int      @default(1)
+  numEnclosures   Int      @default(1)
+  gen1Multiplier  Int      @default(1)
+  useCloning      Boolean  @default(false)
+  useOptimakina   Boolean  @default(false)
+  useReproducteur Boolean  @default(false)
+  note            String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mount Mount @relation(fields: [mountId], references: [id])
+}
