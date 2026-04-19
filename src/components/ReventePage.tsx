@@ -77,8 +77,22 @@ export function ReventePage() {
   const [fuelPrices, setFuelPrices] = useState<FuelPrices>({});
 
   useEffect(() => {
+    let cancelled = false;
+
     setConfig(loadConfig());
-    setFuelPrices(loadFuelPrices());
+
+    async function loadSharedFuelPrices() {
+      const loaded = await loadFuelPrices();
+      if (!cancelled) {
+        setFuelPrices(loaded);
+      }
+    }
+
+    void loadSharedFuelPrices();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   function updateConfig(key: keyof ReventeConfig, value: string) {

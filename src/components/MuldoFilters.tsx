@@ -90,7 +90,7 @@ export function MuldoFilters({
           currentSearch) && (
           <Button
             variant="ghost"
-            onClick={() => router.push("/muldos")}
+            onClick={() => router.push("/mounts/muldos")}
             className="text-muted-foreground"
           >
             Réinitialiser

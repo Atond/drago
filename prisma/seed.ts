@@ -27,8 +27,14 @@ const muldos = [
   { name: "Muldo Doré et Indigo", generation: 2, image: "dore-indigo.png", parents: ["Muldo Doré", "Muldo Indigo"] as [string, string] },
   { name: "Muldo Ebène et Indigo", generation: 2, image: "ebene-indigo.png", parents: ["Muldo Ebène", "Muldo Indigo"] as [string, string] },
   // Generation 3 (2)
-  { name: "Muldo Roux", generation: 3, image: "roux.png", parents: ["Muldo Doré et Pourpre", "Muldo Doré et Orchidée"] as [string, string] },
-  { name: "Muldo Amande", generation: 3, image: "amande.png", parents: ["Muldo Ebène et Indigo", "Muldo Ebène et Orchidée"] as [string, string] },
+  { name: "Muldo Roux", generation: 3, image: "roux.png", parents: ["Muldo Doré et Pourpre", "Muldo Doré et Indigo"] as [string, string],
+    breedingCombinations: [["Muldo Doré et Pourpre", "Muldo Doré et Indigo"]] as [string, string][] },
+  { name: "Muldo Amande", generation: 3, image: "amande.png", parents: ["Muldo Indigo et Pourpre", "Muldo Ebène et Orchidée"] as [string, string],
+    breedingCombinations: [
+      ["Muldo Indigo et Pourpre", "Muldo Ebène et Orchidée"],
+      ["Muldo Ebène et Pourpre", "Muldo Indigo et Orchidée"],
+      ["Muldo Orchidée et Pourpre", "Muldo Ebène et Indigo"],
+    ] as [string, string][] },
   // Generation 4 (11)
   { name: "Muldo Doré et Amande", generation: 4, image: "dore-amande.png", parents: ["Muldo Doré", "Muldo Amande"] as [string, string] },
   { name: "Muldo Ebène et Amande", generation: 4, image: "ebene-amande.png", parents: ["Muldo Ebène", "Muldo Amande"] as [string, string] },
@@ -42,8 +48,10 @@ const muldos = [
   { name: "Muldo Roux et Orchidée", generation: 4, image: "roux-orchidee.png", parents: ["Muldo Roux", "Muldo Orchidée"] as [string, string] },
   { name: "Muldo Roux et Pourpre", generation: 4, image: "roux-pourpre.png", parents: ["Muldo Roux", "Muldo Pourpre"] as [string, string] },
   // Generation 5 (2)
-  { name: "Muldo Ivoire", generation: 5, image: "ivoire.png", parents: ["Muldo Roux et Amande", "Muldo Roux et Doré"] as [string, string] },
-  { name: "Muldo Turquoise", generation: 5, image: "turquoise.png", parents: ["Muldo Roux et Amande", "Muldo Doré et Amande"] as [string, string] },
+  { name: "Muldo Ivoire", generation: 5, image: "ivoire.png", parents: ["Muldo Roux et Doré", "Muldo Ebène et Amande"] as [string, string],
+    breedingCombinations: [["Muldo Roux et Doré", "Muldo Ebène et Amande"]] as [string, string][] },
+  { name: "Muldo Turquoise", generation: 5, image: "turquoise.png", parents: ["Muldo Doré et Amande", "Muldo Roux et Ebène"] as [string, string],
+    breedingCombinations: [["Muldo Doré et Amande", "Muldo Roux et Ebène"]] as [string, string][] },
   // Generation 6 (15)
   { name: "Muldo Pourpre et Ivoire", generation: 6, image: "pourpre-ivoire.png", parents: ["Muldo Pourpre", "Muldo Ivoire"] as [string, string] },
   { name: "Muldo Orchidée et Ivoire", generation: 6, image: "orchidee-ivoire.png", parents: ["Muldo Orchidée", "Muldo Ivoire"] as [string, string] },
@@ -61,8 +69,10 @@ const muldos = [
   { name: "Muldo Turquoise et Amande", generation: 6, image: "turquoise-amande.png", parents: ["Muldo Turquoise", "Muldo Amande"] as [string, string] },
   { name: "Muldo Turquoise et Doré", generation: 6, image: "turquoise-dore.png", parents: ["Muldo Turquoise", "Muldo Doré"] as [string, string] },
   // Generation 7 (2)
-  { name: "Muldo Prune", generation: 7, image: "prune.png", parents: ["Muldo Turquoise et Ivoire", "Muldo Turquoise et Pourpre"] as [string, string] },
-  { name: "Muldo Emeraude", generation: 7, image: "emeraude.png", parents: ["Muldo Turquoise et Ivoire", "Muldo Amande et Ivoire"] as [string, string] },
+  { name: "Muldo Prune", generation: 7, image: "prune.png", parents: ["Muldo Ebène et Ivoire", "Muldo Turquoise et Pourpre"] as [string, string],
+    breedingCombinations: [["Muldo Ebène et Ivoire", "Muldo Turquoise et Pourpre"]] as [string, string][] },
+  { name: "Muldo Emeraude", generation: 7, image: "emeraude.png", parents: ["Muldo Turquoise et Ivoire", "Muldo Turquoise et Doré"] as [string, string],
+    breedingCombinations: [["Muldo Turquoise et Ivoire", "Muldo Turquoise et Doré"]] as [string, string][] },
   // Generation 8 (19)
   { name: "Muldo Prune et Pourpre", generation: 8, image: "prune-pourpre.png", parents: ["Muldo Prune", "Muldo Pourpre"] as [string, string] },
   { name: "Muldo Prune et Orchidée", generation: 8, image: "prune-orchidee.png", parents: ["Muldo Prune", "Muldo Orchidée"] as [string, string] },
@@ -84,10 +94,14 @@ const muldos = [
   { name: "Muldo Ivoire et Emeraude", generation: 8, image: "ivoire-emeraude.png", parents: ["Muldo Ivoire", "Muldo Emeraude"] as [string, string] },
   { name: "Muldo Turquoise et Emeraude", generation: 8, image: "turquoise-emeraude.png", parents: ["Muldo Turquoise", "Muldo Emeraude"] as [string, string] },
   // Generation 9 (4)
-  { name: "Muldo Ambre", generation: 9, image: "ambre.png", parents: ["Muldo Prune et Emeraude", "Muldo Prune et Pourpre"] as [string, string] },
-  { name: "Muldo Corail", generation: 9, image: "corail.png", parents: ["Muldo Prune et Emeraude", "Muldo Prune et Orchidée"] as [string, string] },
-  { name: "Muldo Azur", generation: 9, image: "azur.png", parents: ["Muldo Prune et Emeraude", "Muldo Prune et Indigo"] as [string, string] },
-  { name: "Muldo Aigue-marine", generation: 9, image: "aigue-marine.png", parents: ["Muldo Prune et Emeraude", "Muldo Prune et Ebène"] as [string, string] },
+  { name: "Muldo Ambre", generation: 9, image: "ambre.png", parents: ["Muldo Pourpre et Emeraude", "Muldo Roux et Emeraude"] as [string, string],
+    breedingCombinations: [["Muldo Pourpre et Emeraude", "Muldo Roux et Emeraude"]] as [string, string][] },
+  { name: "Muldo Corail", generation: 9, image: "corail.png", parents: ["Muldo Prune et Pourpre", "Muldo Prune et Roux"] as [string, string],
+    breedingCombinations: [["Muldo Prune et Pourpre", "Muldo Prune et Roux"]] as [string, string][] },
+  { name: "Muldo Azur", generation: 9, image: "azur.png", parents: ["Muldo Pourpre et Emeraude", "Muldo Prune et Roux"] as [string, string],
+    breedingCombinations: [["Muldo Pourpre et Emeraude", "Muldo Prune et Roux"]] as [string, string][] },
+  { name: "Muldo Aigue-marine", generation: 9, image: "aigue-marine.png", parents: ["Muldo Prune et Pourpre", "Muldo Roux et Emeraude"] as [string, string],
+    breedingCombinations: [["Muldo Prune et Pourpre", "Muldo Roux et Emeraude"]] as [string, string][] },
   // Generation 10 (50)
   { name: "Muldo Ambre et Doré", generation: 10, image: "ambre-dore.png", parents: ["Muldo Ambre", "Muldo Doré"] as [string, string] },
   { name: "Muldo Ambre et Ebène", generation: 10, image: "ambre-ebene.png", parents: ["Muldo Ambre", "Muldo Ebène"] as [string, string] },
@@ -364,6 +378,7 @@ type MountData = {
   generation: number;
   image: string;
   parents?: [string, string];
+  breedingCombinations?: [string, string][];
 };
 
 async function seedMounts(
@@ -389,6 +404,8 @@ async function seedMounts(
     const parent1Id = item.parents ? nameToId.get(item.parents[0]) : null;
     const parent2Id = item.parents ? nameToId.get(item.parents[1]) : null;
 
+    const breedingCombinations = item.breedingCombinations ?? null;
+
     const mount = await prisma.mount.upsert({
       where: { name_type: { name: item.name, type } },
       update: {
@@ -396,6 +413,7 @@ async function seedMounts(
         imageUrl: `/${imageFolder}/${item.image}`,
         parent1Id,
         parent2Id,
+        breedingCombinations,
       },
       create: {
         name: item.name,
@@ -404,6 +422,7 @@ async function seedMounts(
         imageUrl: `/${imageFolder}/${item.image}`,
         parent1Id,
         parent2Id,
+        breedingCombinations,
       },
     });
 

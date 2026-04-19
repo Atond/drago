@@ -485,8 +485,22 @@ export function BreedingOptimizer({
   const [prices, setPrices] = useState<ResourcePrices>(DEFAULT_PRICES);
   const [fuelPrices, setFuelPrices] = useState<FuelPrices>({});
   useEffect(() => {
+    let cancelled = false;
+
     setPrices(loadPrices());
-    setFuelPrices(loadFuelPrices());
+
+    async function loadSharedFuelPrices() {
+      const loaded = await loadFuelPrices();
+      if (!cancelled) {
+        setFuelPrices(loaded);
+      }
+    }
+
+    void loadSharedFuelPrices();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
   const updatePrice = (key: keyof ResourcePrices, value: number) => {
     const updated = { ...prices, [key]: value };

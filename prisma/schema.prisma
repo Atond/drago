@@ -87,6 +87,9 @@ model Mount {
   parent1   Mount? @relation("Parent1", fields: [parent1Id], references: [id])
   parent2   Mount? @relation("Parent2", fields: [parent2Id], references: [id])
 
+  // Toutes les combinaisons de croisement valides (ex: [[p1Name, p2Name], ...])
+  breedingCombinations Json?
+
   // Relations inverses
   childrenAsP1 Mount[] @relation("Parent1")
   childrenAsP2 Mount[] @relation("Parent2")
@@ -128,4 +131,10 @@ model BreedingPlan {
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   mount Mount @relation(fields: [mountId], references: [id])
+}
+
+model GlobalFuelPrice {
+  fuelId    Int      @id
+  price     Int
+  updatedAt DateTime @updatedAt
 }

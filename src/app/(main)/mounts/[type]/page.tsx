@@ -53,7 +53,13 @@ export default async function MountsPage({ params, searchParams }: PageProps) {
   // Fetch all mounts of this type with parents
   const allMounts = await prisma.mount.findMany({
     where: { type: config.type },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      generation: true,
+      bonus: true,
+      imageUrl: true,
+      breedingCombinations: true,
       parent1: { select: { name: true } },
       parent2: { select: { name: true } },
     },

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import {
   type Fuel,
   type FuelPrices,
@@ -30,10 +31,28 @@ export function CarburantsPage() {
   const [filterTier, setFilterTier] = useState<string>("all");
   const [filterSize, setFilterSize] = useState<string>("all");
   const [prices, setPrices] = useState<FuelPrices>({});
+  const [savedPrices, setSavedPrices] = useState<FuelPrices>({});
   const [search, setSearch] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveOk, setSaveOk] = useState(false);
 
   useEffect(() => {
-    setPrices(loadFuelPrices());
+    let cancelled = false;
+
+    async function loadGlobalPrices() {
+      const loaded = await loadFuelPrices();
+      if (!cancelled) {
+        setPrices(loaded);
+        setSavedPrices(loaded);
+      }
+    }
+
+    void loadGlobalPrices();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const filtered = useMemo(() => {
@@ -51,7 +70,40 @@ export function CarburantsPage() {
     const next = { ...prices, [fuelId]: num };
     if (num === 0) delete next[fuelId];
     setPrices(next);
-    saveFuelPrices(next);
+    if (saveOk) setSaveOk(false);
+    if (saveError) setSaveError(null);
+  }
+
+  const hasUnsavedChanges = useMemo(() => {
+    const keys = new Set<number>([
+      ...Object.keys(prices).map((k) => Number.parseInt(k, 10)),
+      ...Object.keys(savedPrices).map((k) => Number.parseInt(k, 10)),
+    ]);
+
+    for (const key of keys) {
+      if ((prices[key] ?? 0) !== (savedPrices[key] ?? 0)) {
+        return true;
+      }
+    }
+    return false;
+  }, [prices, savedPrices]);
+
+  async function handleSavePrices() {
+    if (!hasUnsavedChanges || isSaving) return;
+
+    setIsSaving(true);
+    setSaveError(null);
+    setSaveOk(false);
+
+    try {
+      await saveFuelPrices(prices, savedPrices);
+      setSavedPrices(prices);
+      setSaveOk(true);
+    } catch {
+      setSaveError("Impossible d'enregistrer les prix sur le serveur.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   // Group by gauge for display
@@ -289,6 +341,26 @@ export function CarburantsPage() {
             Aucun carburant ne correspond aux filtres sélectionnés.
           </CardContent>
         </Card>
+      )}
+
+      {(hasUnsavedChanges || saveError || saveOk) && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+          {saveError && (
+            <div className="rounded-md border border-destructive/40 bg-background px-3 py-2 text-sm text-destructive shadow-lg">
+              {saveError}
+            </div>
+          )}
+          {saveOk && !hasUnsavedChanges && (
+            <div className="rounded-md border border-green-600/30 bg-background px-3 py-2 text-sm text-green-600 shadow-lg">
+              Prix enregistrés pour tous les comptes.
+            </div>
+          )}
+          {hasUnsavedChanges && (
+            <Button onClick={handleSavePrices} disabled={isSaving} className="shadow-xl">
+              {isSaving ? "Envoi..." : "Valider les prix"}
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-// Shared fuel data and localStorage helpers for carburants page + optimizer
+// Shared fuel data and global storage helpers for carburants page + optimizer
 
 export interface Fuel {
   id: number;
@@ -165,24 +165,87 @@ export const ALL_FUELS: Fuel[] = [
   { id: 33526, name: "Gigantesque Élixir de Mangeoire", gauge: "Mangeoire", tier: "Élixir", size: "Gigantesque", durability: 5000, maxGauge: 100000, level: 195, iconId: 93241, img: "https://api.dofusdb.fr/img/items/93241.png" },
 ];
 
-// localStorage keys
+// Legacy localStorage key used only as client-side fallback.
 export const FUEL_PRICES_KEY = "dragodofus-fuel-prices";
 
 export interface FuelPrices {
   [fuelId: number]: number;
 }
 
-export function loadFuelPrices(): FuelPrices {
+export interface FuelPriceUpdate {
+  fuelId: number;
+  price: number;
+}
+
+export async function loadFuelPrices(): Promise<FuelPrices> {
   if (typeof window === "undefined") return {};
+
+  try {
+    const res = await fetch("/api/fuel-prices", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const prices = (data?.prices ?? {}) as FuelPrices;
+
+      // Keep a local cache as fallback for temporary API/network issues.
+      localStorage.setItem(FUEL_PRICES_KEY, JSON.stringify(prices));
+      return prices;
+    }
+  } catch {
+    // Fall back to local cache below.
+  }
+
   try {
     const saved = localStorage.getItem(FUEL_PRICES_KEY);
     if (saved) return JSON.parse(saved);
   } catch {}
+
   return {};
 }
 
-export function saveFuelPrices(prices: FuelPrices) {
+export async function saveFuelPrices(
+  prices: FuelPrices,
+  previousPrices: FuelPrices = {},
+): Promise<void> {
+  if (typeof window === "undefined") return;
+
+  // Update local cache immediately for responsiveness.
   localStorage.setItem(FUEL_PRICES_KEY, JSON.stringify(prices));
+
+  const keys = new Set<number>([
+    ...Object.keys(previousPrices).map((k) => Number.parseInt(k, 10)),
+    ...Object.keys(prices).map((k) => Number.parseInt(k, 10)),
+  ]);
+
+  const updates: FuelPriceUpdate[] = [];
+  for (const fuelId of keys) {
+    if (!Number.isInteger(fuelId) || fuelId <= 0) continue;
+
+    const prev = previousPrices[fuelId] ?? 0;
+    const next = prices[fuelId] ?? 0;
+
+    if (prev === next) continue;
+    updates.push({ fuelId, price: next });
+  }
+
+  if (updates.length === 0) return;
+
+  const res = await fetch("/api/fuel-prices", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ updates }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to save fuel prices");
+  }
 }
 
 // Compute best price per durability unit for each gauge type (legacy — cheapest across all tiers)

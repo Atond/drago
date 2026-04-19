@@ -21,7 +21,7 @@ export default async function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {session?.user ? (
-              <Link href="/muldos">
+              <Link href="/mounts/muldos">
                 <Button size="lg" className="w-full sm:w-auto">
                   Voir ma collection
                 </Button>

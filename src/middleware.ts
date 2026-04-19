@@ -11,12 +11,7 @@ export async function middleware(req: NextRequest) {
 
   // Redirect logged-in users away from auth pages
   if (isLoggedIn && isAuthPage) {
-    return NextResponse.redirect(new URL("/muldos", req.url));
-  }
-
-  // Redirect non-logged-in users to login for protected routes
-  if (!isLoggedIn && !isAuthPage && req.nextUrl.pathname !== "/") {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/mounts/muldos", req.url));
   }
 
   return NextResponse.next();

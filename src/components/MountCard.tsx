@@ -20,6 +20,7 @@ interface MountCardProps {
     imageUrl: string | null;
     parent1?: { name: string } | null;
     parent2?: { name: string } | null;
+    breedingCombinations?: unknown;
   };
   userMount?: {
     maleCount: number;
@@ -96,11 +97,28 @@ export function MountCard({ mount, userMount, mountType }: MountCardProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-2 pt-2">
-        {mount.parent1 && mount.parent2 && (
-          <p className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-1">
-            {mount.parent1.name} × {mount.parent2.name}
-          </p>
-        )}
+        {(() => {
+          const combos = Array.isArray(mount.breedingCombinations) ? mount.breedingCombinations as [string, string][] : null;
+          if (combos && combos.length > 0) {
+            return (
+              <div className="space-y-1">
+                {combos.map(([p1, p2], i) => (
+                  <p key={i} className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-1">
+                    {p1} × {p2}
+                  </p>
+                ))}
+              </div>
+            );
+          }
+          if (mount.parent1 && mount.parent2) {
+            return (
+              <p className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-1">
+                {mount.parent1.name} × {mount.parent2.name}
+              </p>
+            );
+          }
+          return null;
+        })()}
 
         <div className="flex items-center justify-between gap-2 pt-2 border-t">
           <div className="flex items-center gap-1">

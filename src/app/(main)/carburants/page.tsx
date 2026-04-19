@@ -12,7 +12,7 @@ export default async function Page() {
         <h1 className="text-3xl font-bold mb-2">Carburants d'Enclos</h1>
         <p className="text-muted-foreground">
           Tous les carburants disponibles pour recharger les jauges de vos enclos.
-          Définissez vos prix serveur pour calculer les coûts dans l'optimiseur.
+          Les prix enregistrés ici sont communs à tous les comptes du site.
         </p>
       </div>
       <CarburantsPage />

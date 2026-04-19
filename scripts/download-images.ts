@@ -95,7 +95,9 @@ function downloadImage(name: string): Promise<void> {
 async function main() {
   console.log("📥 Téléchargement des images de Muldos...\n");
 
-  if (!fs.existsSync(OUTPUT_DIR)) {
+  if (!fs.existsSync(OUTPUT_DIR)) {Indigo et Pourpre + Ebène et Orchidée
+Ebène et Pourpre + Indigo et Orchidée
+Orchidée et Pourpre + Ebène et Indigo
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
